@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "components/keyboard.jsx"  ],
   "exclude": ["node_modules"]
 }
