@@ -1,0 +1,7 @@
+{
+  "texts": [
+    "function sum(a: number, b: number): number {\n  return a + b;\n}\n\nconst items = [1, 2, 3];\nconst total = items.reduce((acc, n) => acc + n, 0);\nconsole.log(`total: ${total}`);",
+    "type User = { id: string; name: string };\n\nasync function fetchUser(id: string): Promise<User> {\n  const res = await fetch(`/api/users/${id}`);\n  if (!res.ok) throw new Error(\"request failed\");\n  return res.json();\n}",
+    "const clamp = (n: number, min: number, max: number) =>\n  Math.min(max, Math.max(min, n));\n\nexport const lerp = (a: number, b: number, t: number) => a + (b - a) * clamp(t, 0, 1);"
+  ]
+}

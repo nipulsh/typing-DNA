@@ -1,0 +1,7 @@
+{
+  "texts": [
+    "Email: user@example.com | Math: 2 * (3 + 4) = 14 | Money: $19.99 @ 50% | Ops: a != b && x <= y || z >= 0 | Brackets: [] {} () | Quotes: \"hello\" 'world' | Regex: /^[a-z]+$/ | Path: /home/user/docs",
+    "JSON: {\"ok\":true,\"items\":[1,2,3]} | URL: https://api.site/v2?q=a+b | Range: 0..100% | Types: Map<K,V> | Escapes: \\n \\t | Ops: ++i; i--; a??b; a?.b",
+    "Markdown: # Title | list: - a - b | `inline` | **bold** | [link](https://x.y) | $$ E = mc^2 $$ | @mention #tag"
+  ]
+}

@@ -1,24 +1,16 @@
-import {
-  useState,
-  useRef,
-  useEffect,
-  type CSSProperties,
-  type ChangeEvent,
-} from "react";
+import { useState, useRef, useEffect, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import useStartStore from "@/store/StartStore";
+import typingSessionStore from "@/store/typingSessionStore";
 
 export default function Timer() {
-  const { state } = useStartStore();
-  const [seconds, setSeconds] = useState(59);
+  const { state, timer } = useStartStore();
+  const [seconds, setSeconds] = useState(timer);
   const [running, setRunning] = useState(false);
   const [timerHeight, setTimerHeight] = useState(160);
   const timerRef = useRef<HTMLDivElement | null>(null);
-
-  const handleSecondsChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    setSeconds(Number.isNaN(value) ? 0 : Math.max(0, value));
-  };
+  const prevStateRef = useRef(state);
+  const completionSentRef = useRef(false);
 
   useEffect(() => {
     if (!running) return;
@@ -28,7 +20,33 @@ export default function Timer() {
           setRunning(false);
           return 0;
         }
-        return prev - 1;
+        const next = prev - 1;
+        if (next === 0) {
+          setRunning(false);
+          if (!completionSentRef.current) {
+            completionSentRef.current = true;
+            const payload = typingSessionStore.getState().getSessionForPersist();
+            typingSessionStore.getState().clearAfterPersist();
+            useStartStore.getState().setState(false);
+            void (async () => {
+              if (!payload) return;
+              try {
+                await fetch("/api/keystroke", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    sessionId: payload.sessionId,
+                    completed: true,
+                    events: payload.events,
+                  }),
+                });
+              } catch {
+                /* ignore */
+              }
+            })();
+          }
+        }
+        return next;
       });
     }, 1000);
     return () => clearInterval(id);
@@ -37,6 +55,24 @@ export default function Timer() {
   useEffect(() => {
     setRunning(state);
   }, [state]);
+
+  useEffect(() => {
+    const wasStarted = prevStateRef.current;
+    prevStateRef.current = state;
+    if (state && !wasStarted) {
+      completionSentRef.current = false;
+      setSeconds(timer);
+    }
+    if (!state && wasStarted) {
+      setSeconds(timer);
+    }
+  }, [state, timer]);
+
+  useEffect(() => {
+    if (!state) {
+      setSeconds(timer);
+    }
+  }, [timer, state]);
 
   useEffect(() => {
     if (!timerRef.current) return;
@@ -59,7 +95,7 @@ export default function Timer() {
           "--timer-height": `${timerHeight}px`,
         } as CSSProperties
       }
-      className="h-40 w-55 absolute top-15 left-10 bg-[#0a0a0a] flex flex-col items-center justify-center gap-8 font-mono p-4"
+      className="h-auto w-auto absolute top-25 left-20 bg-[#0a0a0a] flex flex-col items-center justify-center gap-8 font-mono p-4"
     >
       <motion.div
         initial={{ opacity: 0, y: 24 }}

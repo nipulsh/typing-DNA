@@ -9,7 +9,7 @@ interface StartStore {
 
 const StartStore = create<StartStore>((set) => ({
   state: false,
-  timer: 0,
+  timer: 60,
   setState: (state) => set({ state }),
   setTimer: (timer) => set({ timer }),
 }));

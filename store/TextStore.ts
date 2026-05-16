@@ -6,6 +6,7 @@ interface TextStore {
   toggleState: (position: number | null, matched?: boolean | null) => void;
   getCharacter: (position: number) => character | undefined;
   getState: (position: number) => boolean | null | undefined;
+  resetProgress: () => void;
 }
 
 interface character {
@@ -39,6 +40,16 @@ const textStore = create<TextStore>((set, get) => ({
     const text = get().text;
     return text[position]?.matched ?? null;
   },
+  resetProgress: () =>
+    set((state) => {
+      const next: Record<number, character> = {};
+      for (const key of Object.keys(state.text)) {
+        const k = Number(key);
+        const cell = state.text[k];
+        if (cell) next[k] = { ...cell, matched: null };
+      }
+      return { text: next };
+    }),
 }));
 
 export default textStore;

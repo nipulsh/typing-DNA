@@ -1,14 +1,17 @@
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import textStore from "@/store/TextStore";
 
 function useUpdateText(character: string[]) {
-  const setText = textStore((state) => state.setText);
-
-  useEffect(() => {
-    character.forEach((char, index) => {
-      setText(char, index, null);
-    });
-  }, [character, setText]);
+  useLayoutEffect(() => {
+    const next: Record<
+      number,
+      { value: string; position: number; matched?: boolean | null }
+    > = {};
+    for (let i = 0; i < character.length; i++) {
+      next[i] = { value: character[i]!, position: i };
+    }
+    textStore.setState({ text: next });
+  }, [character]);
 }
 
 export default useUpdateText;

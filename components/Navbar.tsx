@@ -1,25 +1,44 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React from "react";
 import { ModeToggle } from "./ModeToggle";
 import { Settings } from "lucide-react";
 import Link from "next/link";
+import TimerDurationMenu from "@/components/TimerDurationMenu";
+import textTabStore, { type TextTab } from "@/store/textTabStore";
 
 const Navbar = () => {
-  const [activeTab, setActiveTab] = useState("Normal");
+  const activeTab = textTabStore((s) => s.activeTab);
+  const setActiveTab = textTabStore((s) => s.setActiveTab);
+  const tabClass = (tab: TextTab) =>
+    activeTab === tab
+      ? "text-primary cursor-pointer underline"
+      : "text-gray-500 cursor-pointer";
+
   return (
-    <div className="p-5 flex items-center justify-between">
-      <div>
+    <div className="p-5 flex items-center justify-between gap-4">
+      <div className="flex shrink-0 items-center gap-3">
         <Image src={"/logo_text.svg"} alt="logo" width={100} height={100} />
+        <TimerDurationMenu />
       </div>
       <div>
         <ul className="flex space-x-4">
-          <li onClick={() => setActiveTab("Normal")} className={activeTab === "Normal" ? "text-primary cursor-pointer underline" : "text-gray-500 cursor-pointer"}>Normal</li>
-          <li onClick={() => setActiveTab("Coding")} className={activeTab === "Coding" ? "text-primary cursor-pointer underline" : "text-gray-500 cursor-pointer"}>Coding</li>
-          <li onClick={() => setActiveTab("Symbols")} className={activeTab === "Symbols" ? "text-primary cursor-pointer underline" : "text-gray-500 cursor-pointer"}>Symbols</li>
-          <li onClick={() => setActiveTab("Adaptive")} className={activeTab === "Adaptive" ? "text-primary cursor-pointer underline" : "text-gray-500 cursor-pointer"}>Adaptive</li>
-          <li onClick={() => setActiveTab("Zen")} className={activeTab === "Zen" ? "text-primary cursor-pointer underline" : "text-gray-500 cursor-pointer"}>Zen</li>
+          <li onClick={() => setActiveTab("Normal")} className={tabClass("Normal")}>
+            Normal
+          </li>
+          <li onClick={() => setActiveTab("Coding")} className={tabClass("Coding")}>
+            Coding
+          </li>
+          <li onClick={() => setActiveTab("Symbols")} className={tabClass("Symbols")}>
+            Symbols
+          </li>
+          <li onClick={() => setActiveTab("Adaptive")} className={tabClass("Adaptive")}>
+            Adaptive
+          </li>
+          <li onClick={() => setActiveTab("Zen")} className={tabClass("Zen")}>
+            Zen
+          </li>
         </ul>
       </div>
       <div className="flex items-center gap-2">
@@ -30,6 +49,6 @@ const Navbar = () => {
       </div>
     </div>
   );
-  };
+};
 
-  export default Navbar;
+export default Navbar;
