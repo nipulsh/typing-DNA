@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import splitText from "@/utils/wordSplit";
 import keystrokeStore from "@/store/keystrokeStore";
 import textStore from "@/store/TextStore";
@@ -6,7 +6,7 @@ import useUpdateText from "@/hooks/useUpdateText";
 
 const TextDisplay = () => {
   const { position, setPosition } = keystrokeStore();
-  const { text, toggleState, getCharacter } = textStore();
+  const { text, toggleState } = textStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -26,29 +26,31 @@ const TextDisplay = () => {
 
   const paragraph =
     "Morning sunlight entered the quiet library while students prepared assignments, discussed creative ideas, and drank coffee peacefully Outside, gentle rain cooled the streets, creating a calm atmosphere throughout the city";
-  const words = splitText(paragraph);
+  const words = useMemo(() => splitText(paragraph), [paragraph]);
   useUpdateText(words);
 
-  // FIX: ensure object entries are typed as string values for ReactNode compatibility
-  const textEntries = Object.entries(text) as unknown as [string, string][];
+  const textEntries = Object.entries(text) as [
+    string,
+    { value: string | null; position: number; matched?: boolean | null },
+  ][];
 
   return (
     <div className="p-4 h-[60vh] text-gray-500 dark:text-gray-400 text-center flex justify-center items-center flex-wrap text-4xl tracking-[10px] font-bold px-[20vw] capitalize">
-      {textEntries.map(([key, char]) => {
+      {textEntries.map(([key, cell]) => {
         const index = Number(key);
-        return char === " " ? (
+        const ch = cell.value;
+        const isMatched = cell.matched === true;
+        const colorClass =
+          ch == null
+            ? "text-gray-500 dark:text-gray-400"
+            : isMatched
+              ? "text-white"
+              : "text-red-500";
+        return ch === " " ? (
           <span key={index} className="inline-block w-8" />
         ) : (
-          <span
-            key={index}
-            // FIX: "white" → "text-white", "red-500" → "text-red-500"
-            className={
-              (getCharacter(index) as string | undefined) === "matched"
-                ? "text-white"
-                : "text-red-500"
-            }
-          >
-            {char}
+          <span key={index} className={colorClass}>
+            {ch}
           </span>
         );
       })}

@@ -18,7 +18,7 @@ const textStore = create<TextStore>((set, get) => ({
   text: {},
   setText: (value: string, position: number) =>
     set((state) => ({
-      text: { ...state.text, [position]: { value, position } },
+      text: { ...state.text, [position]: { value, position, matched: null } },
     })),
   toggleState: (position: number | null) => {
     if (position === null) return;

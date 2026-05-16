@@ -1,10 +1,14 @@
+import { useEffect } from "react";
 import textStore from "@/store/TextStore";
+
 function useUpdateText(character: string[]) {
   const setText = textStore((state) => state.setText);
 
-  character.forEach((char, index) => {
-    setText(char, index);
-  });
+  useEffect(() => {
+    character.forEach((char, index) => {
+      setText(char, index);
+    });
+  }, [character, setText]);
 }
 
 export default useUpdateText;
