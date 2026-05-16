@@ -6,7 +6,7 @@ function useUpdateText(character: string[]) {
 
   useEffect(() => {
     character.forEach((char, index) => {
-      setText(char, index);
+      setText(char, index, null);
     });
   }, [character, setText]);
 }

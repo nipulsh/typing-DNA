@@ -2,8 +2,8 @@ import { create } from "zustand";
 
 interface TextStore {
   text: Record<number, character>;
-  setText: (value: string, position: number) => void;
-  toggleState: (position: number | null) => void;
+  setText: (value: string, position: number, matched?: boolean | null) => void;
+  toggleState: (position: number | null, matched?: boolean | null) => void;
   getCharacter: (position: number) => character | undefined;
   getState: (position: number) => boolean | null | undefined;
 }
@@ -16,11 +16,11 @@ interface character {
 
 const textStore = create<TextStore>((set, get) => ({
   text: {},
-  setText: (value: string, position: number) =>
+  setText: (value: string, position: number, matched?: boolean | null) =>
     set((state) => ({
-      text: { ...state.text, [position]: { value, position, matched: null } },
+      text: { ...state.text, [position]: { value, position, matched } },
     })),
-  toggleState: (position: number | null) => {
+  toggleState: (position: number | null, matched?: boolean | null) => {
     if (position === null) return;
 
     set((state) => ({
@@ -28,7 +28,8 @@ const textStore = create<TextStore>((set, get) => ({
         ...state.text,
         [position]: {
           ...state.text[position],
-          matched: !state.text[position]?.matched,
+          matched:
+            matched !== undefined ? matched : !state.text[position]?.matched,
         },
       },
     }));

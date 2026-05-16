@@ -1,29 +1,35 @@
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import splitText from "@/utils/wordSplit";
 import keystrokeStore from "@/store/keystrokeStore";
 import textStore from "@/store/TextStore";
 import useUpdateText from "@/hooks/useUpdateText";
+import wordMatch from "@/utils/wordMatch";
 
 const TextDisplay = () => {
   const { position, setPosition } = keystrokeStore();
-  const { text, toggleState } = textStore();
+  const { text, toggleState, getCharacter } = textStore();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Backspace") {
-        const newPosition = Math.max(position - 1, 0);
+        const newPosition = position - 1;
         setPosition(newPosition);
-        // FIX: pass the new position index so the store can untoggle the
-        // correct character; passing null was likely a bug — adjust the
-        // argument to match your toggleState signature if needed.
-        toggleState(newPosition);
+        toggleState(newPosition, null);
+      } else {
+        const character = getCharacter(position)?.value ?? null;
+        const ismathched = wordMatch(e.key, character ?? "");
+        if (ismathched) {
+          toggleState(position, true);
+          setPosition(position + 1);
+        } else {
+          toggleState(position, false);
+          setPosition(position + 1);
+        }
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [position, setPosition, toggleState]); // FIX: added missing deps
-
+  }, [position, setPosition, toggleState]);
   const paragraph =
     "Morning sunlight entered the quiet library while students prepared assignments, discussed creative ideas, and drank coffee peacefully Outside, gentle rain cooled the streets, creating a calm atmosphere throughout the city";
   const words = useMemo(() => splitText(paragraph), [paragraph]);
@@ -31,7 +37,7 @@ const TextDisplay = () => {
 
   const textEntries = Object.entries(text) as [
     string,
-    { value: string | null; position: number; matched?: boolean | null },
+    { value: string | null; position: number; matched: boolean | null },
   ][];
 
   return (
@@ -39,12 +45,12 @@ const TextDisplay = () => {
       {textEntries.map(([key, cell]) => {
         const index = Number(key);
         const ch = cell.value;
-        const isMatched = cell.matched === true;
+        const isMatched = cell.matched;
         const colorClass =
-          ch == null
+          isMatched == null
             ? "text-gray-500 dark:text-gray-400"
             : isMatched
-              ? "text-white"
+              ? "text-green-500 dark:text-gray-300"
               : "text-red-500";
         return ch === " " ? (
           <span key={index} className="inline-block w-8" />
