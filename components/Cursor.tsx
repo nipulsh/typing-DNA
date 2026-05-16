@@ -1,9 +1,11 @@
-"use client"
+"use client";
 
-import { div, div as MotionDiv } from "framer-motion/m";
+interface Props {
+  index: number;
+}
 
-export default function Cursor() {
+export default function Cursor({ index }: Props) {
   return (
-    <MotionDiv initial={{ opacity: 1 }} animate={{ opacity: 0 }} transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }} className="w-1 h-full bg-gray-500 dark:bg-[#FFB700]" />
-  )
+    <div className="cursor-blink w-1 h-10 bg-[#FFB700] absolute -left-1" />
+  );
 }

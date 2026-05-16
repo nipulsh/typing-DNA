@@ -147,3 +147,17 @@
 .simple-keyboard .hg-button:active {
   background: #333 !important;
 }
+
+.cursor-blink {
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

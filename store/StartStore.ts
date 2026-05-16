@@ -1,19 +1,17 @@
 import { create } from "zustand";
 
 interface StartStore {
-  start: boolean;
-  time: number;
-  setStart: (start: boolean) => void;
-  setTime: (time: number) => void;
-  reset: () => void;
+  state: boolean;
+  timer: number;
+  setState: (state: boolean) => void;
+  setTimer: (timer: number) => void;
 }
 
-const useStartStore = create<StartStore>((set) => ({
-  start: false,
-  time: 0,
-  setStart: (start) => set({ start }),
-  setTime: (time) => set({ time }),
-  reset: () => set({ start: false, time: 0 }),
+const StartStore = create<StartStore>((set) => ({
+  state: false,
+  timer: 0,
+  setState: (state) => set({ state }),
+  setTimer: (timer) => set({ timer }),
 }));
 
-export default useStartStore;
+export default StartStore;
